@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-type SourceType = 'streams' 
+type SourceType = 'streams'
 const sourceActive = ref<SourceType>('streams')
 </script>
 

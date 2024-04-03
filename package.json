@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env RUST_BACKTRACE=1 concurrently -k \"tauri dev\"",
+    "lint": "eslint . --fix",
     "build": "tauri build",
     "vite:dev": "vite dev",
     "vite:build": "vite build",
@@ -68,6 +69,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*": "eslint . --fix"
   }
 }

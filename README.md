@@ -5,8 +5,6 @@
 > [!warning]
 >
 > # NOTICE 注意
->
-> 
 
 ## App Screenshot
 
@@ -34,8 +32,8 @@ cd src-tauri && cargo update
 
 ## 前言
 
-- 
+-
 
 ## Develop Step
 
-1. 
+1.
