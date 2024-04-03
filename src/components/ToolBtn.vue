@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import { Command } from '@tauri-apps/api/shell'
 import type { PropType } from 'vue'
-import { sessionMouseState } from '~/composables/session'
 import type { MouseState } from '~/types'
 
-const props = defineProps({
+defineProps({
   iconName: {
     type: String,
     required: true,
@@ -17,14 +17,16 @@ const props = defineProps({
     required: true,
   },
 })
-function handleClick() {
-  sessionMouseState.value = props.type
+async function handleClick() {
+  const command = Command.sidecar('sidecar/go2rtc')
+  const output = await command.execute()
+  console.warn(output)
 }
 </script>
 
 <template>
   <IconBtn
-    :icon-name="iconName" :class="`${sessionMouseState === type ? 'active' : 'inactive'}`"
+    :icon-name="iconName" class="inactive"
     :tooltip-name="name"
     @click="handleClick"
   />

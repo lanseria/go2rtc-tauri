@@ -3,16 +3,17 @@ import { cwd, env, exit } from 'node:process'
 import * as process from 'node:process'
 import { join } from 'node:path'
 import { execSync } from 'node:child_process'
-import { createGunzip } from 'node:zlib'
 import { URL } from 'node:url'
 import fs from 'fs-extra'
-import tar from 'tar'
 import AdmZip from 'adm-zip'
 import axios from 'axios'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
 const TEMP_DIR = join(cwd(), 'node_modules/.go2rtc-tauri')
 const { platform, arch } = process
+
+const isWin = platform === 'win32'
+const isMac = platform === 'darwin'
 
 // eslint-disable-next-line ts/ban-ts-comment
 // @ts-expect-error
@@ -93,56 +94,25 @@ async function resolveSidecar(binInfo) {
     }
 
     if (zipFile.endsWith('.zip')) {
+      // macos windows
       const zip = new AdmZip(tempZip)
       zip.getEntries().forEach((entry) => {
         console.log(`[DEBUG]: "${name}" entry name`, entry.entryName)
       })
       zip.extractAllTo(tempDir, true)
       await fs.rename(tempExe, sidecarPath)
+      if (isMac) {
+        // macos need chmod
+        execSync(`chmod 755 ${sidecarPath}`)
+      }
       console.log(`[INFO]: "${name}" unzip finished`)
     }
-    else if (zipFile.endsWith('.tgz')) {
-      // tgz
-      await fs.mkdirp(tempDir)
-      await tar.extract({
-        cwd: tempDir,
-        file: tempZip,
-        // strip: 1, // 可能需要根据实际的 .tgz 文件结构调整
-      })
-      const files = await fs.readdir(tempDir)
-      console.log(`[DEBUG]: "${name}" files in tempDir:`, files)
-      const extractedFile = files.find(file => file.startsWith('虚空终端-'))
-      if (extractedFile) {
-        const extractedFilePath = join(tempDir, extractedFile)
-        await fs.rename(extractedFilePath, sidecarPath)
-        console.log(`[INFO]: "${name}" file renamed to "${sidecarPath}"`)
-        execSync(`chmod 755 ${sidecarPath}`)
-        console.log(`[INFO]: "${name}" chmod binary finished`)
-      }
-      else {
-        throw new Error(`Expected file not found in ${tempDir}`)
-      }
-    }
     else {
-      // gz
-      const readStream = fs.createReadStream(tempZip)
-      const writeStream = fs.createWriteStream(sidecarPath)
-      await new Promise((resolve, reject) => {
-        const onError = (error) => {
-          console.error(`[ERROR]: "${name}" gz failed:`, error.message)
-          reject(error)
-        }
-        readStream
-          .pipe(createGunzip().on('error', onError))
-          .pipe(writeStream)
-          .on('finish', () => {
-            console.log(`[INFO]: "${name}" gunzip finished`)
-            execSync(`chmod 755 ${sidecarPath}`)
-            console.log(`[INFO]: "${name}" chmod binary finished`)
-            resolve(true)
-          })
-          .on('error', onError)
-      })
+      // binary linux
+      await fs.rename(tempZip, sidecarPath)
+      // linux need chmod
+      execSync(`chmod 755 ${sidecarPath}`)
+      console.log(`[INFO]: "${name}" binary rename finished`)
     }
   }
   catch (err) {
@@ -186,8 +156,6 @@ async function getLatestReleaseVersion() {
 }
 function go2rtcRelease() {
   const name = GO2RTC_MAP[`${platform}-${arch}`]
-  const isWin = platform === 'win32'
-  const isMac = platform === 'darwin'
   const urlExt = isWin || isMac ? 'zip' : 'gz'
   const downloadURL = `${META_URL_PREFIX}/${GO2RTC_VERSION}/${name}.${urlExt}`
   const exeFile = `${NAME}${isWin ? '.exe' : ''}`

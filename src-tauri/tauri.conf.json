@@ -12,36 +12,14 @@
   "tauri": {
     "allowlist": {
       "all": true,
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": true,
-        "save": true
-      },
-      "fs": {
-        "all": true,
-        "copyFile": true,
-        "createDir": true,
-        "exists": true,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": true,
-        "removeFile": true,
-        "renameFile": true,
-        "writeFile": true
-      },
-      "window": {
-        "all": false,
-        "close": true,
-        "hide": true,
-        "maximize": true,
-        "minimize": true,
-        "show": true,
-        "startDragging": true,
-        "unmaximize": true,
-        "unminimize": true
+      "shell": {
+        "scope": [
+          {
+            "name": "sidecar/go2rtc",
+            "sidecar": true
+          }
+        ],
+        "sidecar": true
       }
     },
     "bundle": {
@@ -51,7 +29,9 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": [
+        "sidecar/go2rtc"
+      ],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
