@@ -39,6 +39,7 @@ declare module 'vue' {
     SourceGeoJson: typeof import('./components/SourceGeoJson.vue')['default']
     SourceKmlData: typeof import('./components/SourceKmlData.vue')['default']
     SourceShpData: typeof import('./components/SourceShpData.vue')['default']
+    SourceStreamsData: typeof import('./components/SourceStreamsData.vue')['default']
     SourceTiffData: typeof import('./components/SourceTiffData.vue')['default']
     TfwBtn: typeof import('./components/TfwBtn.vue')['default']
     TifBtn: typeof import('./components/TifBtn.vue')['default']

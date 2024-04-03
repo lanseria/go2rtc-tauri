@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { sessionSourceBarVisible } from '~/composables'
-
-
 </script>
 
 <template>
