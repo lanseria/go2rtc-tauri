@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import type { Terminal } from '@xterm/xterm'
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
 
@@ -7,18 +9,11 @@ declare module '*.vue' {
   export default component
 }
 
-interface Window {
-  map: mapboxgl.Map
-  draw: MapboxDraw
-}
-
 /**
  * defines in `vite.config.ts`
  */
 declare const OS_PLATFORM: Platform
 
-declare module 'geotiff-geokeys-to-proj4/main.js' {
-  export * from 'geotiff-geokeys-to-proj4'
+declare global {
+  interface Window { term: Terminal }
 }
-
-declare module '@mapbox/togeojson'

@@ -162,6 +162,8 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const seesionGo2rtcStderr: typeof import('./composables/session')['seesionGo2rtcStderr']
+  const seesionGo2rtcStdout: typeof import('./composables/session')['seesionGo2rtcStdout']
   const sessionDrawActiveId: typeof import('./composables/session')['sessionDrawActiveId']
   const sessionDrawMarkerList: typeof import('./composables/session')['sessionDrawMarkerList']
   const sessionDrawPointList: typeof import('./composables/session')['sessionDrawPointList']
