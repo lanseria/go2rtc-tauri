@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import type { Terminal } from '@xterm/xterm'
+import type { FitAddon } from '@xterm/addon-fit'
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
@@ -15,5 +16,8 @@ declare module '*.vue' {
 declare const OS_PLATFORM: Platform
 
 declare global {
-  interface Window { term: Terminal }
+  interface Window {
+    term: Terminal
+    fitAddon: FitAddon
+  }
 }

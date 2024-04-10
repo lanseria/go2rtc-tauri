@@ -1,8 +1,9 @@
 import type { MouseState } from '~/types'
 
-export const sessionSourceBarVisible = useSessionStorage('sessionSourceBarVisible', true)
+export const sessionSourceBarVisible = useSessionStorage('sessionSourceBarVisible', false)
 export function setSourceBarVisible() {
   sessionSourceBarVisible.value = !sessionSourceBarVisible.value
+  window.fitAddon.fit()
 }
 /**
  * MouseState
@@ -12,5 +13,6 @@ export const sessionMouseState = useSessionStorage<MouseState>('sessionMouseStat
 export const seesionGo2rtcStdout = useSessionStorage<string>('seesionGo2rtcStdout', '')
 export const seesionGo2rtcStderr = useSessionStorage<string>('seesionGo2rtcStderr', '')
 watch(seesionGo2rtcStdout, (value) => {
-  window.term.write(value)
+  window.term.writeln(`${value}`)
+  console.warn(value)
 })

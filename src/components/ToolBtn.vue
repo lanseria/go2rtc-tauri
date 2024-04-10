@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import type { PropType } from 'vue'
-import type { MouseState } from '~/types'
+import { useRoute } from 'vue-router'
 
-defineProps({
+const props = defineProps({
   iconName: {
     type: String,
     required: true,
   },
   type: {
-    type: String as PropType<MouseState>,
+    type: String,
     required: true,
   },
   name: {
@@ -16,12 +15,21 @@ defineProps({
     required: true,
   },
 })
+const route = useRoute()
+
+const computedActiveClass = computed(() => {
+  // path same as name
+  return route.name === props.type ? 'active' : 'inactive'
+})
 </script>
 
 <template>
   <IconBtn
-    :icon-name="iconName" class="inactive"
+    :icon-name="iconName"
+    class="inactive"
+    :class="computedActiveClass"
     :tooltip-name="name"
+    @click="$router.push(type)"
   />
 </template>
 
@@ -29,11 +37,10 @@ defineProps({
 .tool-button:not(.active) {
   @apply hover:bg-gray-1;
 }
-.active {
-  @apply bg-blue-5 text-white;
-}
-
 .inactive {
   @apply bg-white text-gray-7;
+}
+.active {
+  @apply bg-blue-5 text-white;
 }
 </style>

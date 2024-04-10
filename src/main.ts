@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router/auto'
 import ArcoVue from '@arco-design/web-vue'
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 
@@ -15,7 +16,11 @@ import '@arco-design/web-vue/dist/arco.css'
 
 const app = createApp(App)
 
+const router = createRouter({
+  history: createWebHistory(),
+})
 app.use(ArcoVue, {})
 app.use(ArcoVueIcon)
+app.use(router)
 
 app.mount('#app')

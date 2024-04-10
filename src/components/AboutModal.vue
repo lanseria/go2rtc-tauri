@@ -21,15 +21,15 @@ defineExpose({
       </template>
       <template #body>
         <ASpace direction="vertical" align="center" class="w-full">
-          <MapLogo />
+          <Logo />
           <ATypographyText>
             技术栈
             <a
               class="ms-link-text"
-              href="https://mapbox.com"
+              href="https://github.com/tauri-apps/tauri"
               target="_blank"
               rel="noreferrer"
-            >@Mapbox</a>
+            >@Tauri</a>
             <a
               class="ms-link-text"
               href="https://vuejs.org"

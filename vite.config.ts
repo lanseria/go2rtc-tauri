@@ -6,6 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 import { defineConfig } from 'vite'
 import Unocss from 'unocss/vite'
+import VueRouter from 'unplugin-vue-router/vite'
 
 // See https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +18,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    VueRouter({
+      dts: './src/typed-router.d.ts',
+    }),
     vue(),
     // See https://github.com/unplugin/unplugin-auto-import
     AutoImport({

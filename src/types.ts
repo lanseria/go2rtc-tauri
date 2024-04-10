@@ -1,1 +1,1 @@
-export type MouseState = 'default' | 'point' | 'line' | 'polygon' | 'circle'
+export type WindowState = 'terminal'

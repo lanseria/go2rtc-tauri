@@ -5,7 +5,7 @@
   <div class="flex items-center p-1">
     <div class="logo" />
     <div class="ml-2 justify-start text-size-18px font-serif">
-      Map Tauri App 万物分享
+      Go2rtc Tauri App 视频直播流
     </div>
   </div>
 </template>
