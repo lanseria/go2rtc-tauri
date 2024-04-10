@@ -15,11 +15,11 @@ async function startGo2rtcApp() {
   })
   command.stdout.on('data', (data) => {
     // console.warn('[stdout]', data)
-    seesionGo2rtcStdout.value = data
+    seesionGo2rtcStdout.value += `${data}\r`
   })
   command.stderr.on('data', (data) => {
     // console.warn('[stderr]', data)
-    seesionGo2rtcStderr.value = data
+    seesionGo2rtcStderr.value += `${data}\r`
   })
   child.value = await command.spawn()
 }
@@ -29,6 +29,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   child.value?.kill()
   command.removeAllListeners()
+  seesionGo2rtcStdout.value = ''
 })
 </script>
 

@@ -13,6 +13,7 @@ onMounted(() => {
   term.loadAddon(fitAddon)
   window.term = term
   window.fitAddon = fitAddon
+  term.write(seesionGo2rtcStdout.value)
 })
 onBeforeUnmount(() => {
   if (window.term)
@@ -24,5 +25,5 @@ useResizeObserver(TerminalRef, () => {
 </script>
 
 <template>
-  <div ref="TerminalRef" class="h-full w-full flex-1" />
+  <div ref="TerminalRef" class="h-full w-full flex-1 bg-black" />
 </template>
