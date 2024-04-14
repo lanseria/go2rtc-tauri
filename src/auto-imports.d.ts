@@ -113,6 +113,7 @@ declare global {
   const loadKml: typeof import('./composables/map-load')['loadKml']
   const loadShp: typeof import('./composables/map-load')['loadShp']
   const loadTiff: typeof import('./composables/map-load')['loadTiff']
+  const localData: typeof import('./composables/local')['localData']
   const localDrawFeatureCollection: typeof import('./composables/local')['localDrawFeatureCollection']
   const localDrawPointList: typeof import('./composables/local')['localDrawPointList']
   const localGeoJsonDataList: typeof import('./composables/local')['localGeoJsonDataList']
