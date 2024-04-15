@@ -1,11 +1,11 @@
 [package]
-name = "mapbox_tauri_app"
+name = "go2rtc_tauri_app"
 version = "1.0.0"
 description = "Go2rtc Tauri App"
 authors = [ "lanseria" ]
 license = "MIT"
 repository = "https://github.com/lanseria/go2rtc-tauri-app"
-default-run = "mapbox_tauri_app"
+default-run = "go2rtc_tauri_app"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
