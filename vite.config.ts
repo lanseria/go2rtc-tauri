@@ -10,7 +10,6 @@ import VueRouter from 'unplugin-vue-router/vite'
 
 // See https://vitejs.dev/config/
 export default defineConfig({
-
   resolve: {
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,
@@ -61,5 +60,11 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
     emptyOutDir: true,
+  },
+  optimizeDeps: {
+    include: [
+      '@xterm/xterm',
+      '@xterm/addon-fit',
+    ],
   },
 })
