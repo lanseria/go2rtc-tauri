@@ -1,7 +1,7 @@
 {
-  "name": "word-replacer-tauri",
+  "name": "go2rtc-tauri",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "concurrently --kill-others \"pnpm vite:dev\"",
@@ -29,6 +29,7 @@
     "@types/node": "^22.13.5",
     "@unocss/eslint-plugin": "^66.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
+    "adm-zip": "^0.5.16",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "eslint": "^9.21.0",

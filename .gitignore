@@ -24,6 +24,6 @@ dist-ssr
 *.local
 LOCAL_NOTES.md
 .env
-.wr-cl
+.go2rtc-dl/
 src-tauri/sidecar/**
 src-tauri/resources/**

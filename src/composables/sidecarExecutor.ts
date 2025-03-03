@@ -21,7 +21,7 @@ export async function executeSidecar(
     const configPath = await join(tempDirPath, 'word-replacement-config.json')
     await writeTextFile(configPath, JSON.stringify(config, null, 2))
     // 执行 sidecar
-    const command = Command.sidecar('sidecar/wr-cl', [
+    const command = Command.sidecar('sidecar/go2rtc', [
       '--config',
       configPath,
     ])

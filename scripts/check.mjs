@@ -3,9 +3,9 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import AdmZip from 'adm-zip'
 import fetch from 'node-fetch'
 import { ProxyAgent } from 'proxy-agent'
-import { extract } from 'tar'
 
 // Logging utilities
 const log_info = (...args) => console.log('💬', ...args)
@@ -14,22 +14,18 @@ const log_error = (...args) => console.error('❌', ...args)
 const log_debug = (...args) => console.log('🐛', ...args)
 
 const cwd = process.cwd()
-const TEMP_DIR = path.join(cwd, '.wr-cl')
+const TEMP_DIR = path.join(cwd, '.go2rtc-dl')
 const FORCE = process.argv.includes('--force')
 
-// Platform mapping similar to your reference
+// 平台映射表更新为go2rtc的命名规则[8,7](@ref)
 const PLATFORM_MAP = {
-  'x86_64-pc-windows-msvc': 'windows',
-  'i686-pc-windows-msvc': 'windows',
-  'aarch64-pc-windows-msvc': 'windows',
-  'x86_64-apple-darwin': 'macos',
-  'aarch64-apple-darwin': 'macos',
-  'x86_64-unknown-linux-gnu': 'linux',
-  'i686-unknown-linux-gnu': 'linux',
-  'aarch64-unknown-linux-gnu': 'linux',
+  'x86_64-pc-windows-msvc': 'win64',
+  'aarch64-apple-darwin': 'mac_arm64',
+  'x86_64-apple-darwin': 'mac_amd64',
+  'x86_64-unknown-linux-gnu': 'linux_amd64',
 }
 
-// Get target platform
+// 获取目标平台
 const arg1 = process.argv.slice(2)[0]
 const arg2 = process.argv.slice(2)[1]
 const target = arg1 === '--force' ? arg2 : arg1
@@ -38,42 +34,60 @@ const SIDECAR_HOST = target || execSync('rustc -vV')
   // eslint-disable-next-line regexp/no-empty-lookarounds-assertion
   .match(/(?<=host: ).+(?=)/g)[0]
 
-const platform = target ? PLATFORM_MAP[target] : process.platform === 'win32' ? 'windows' : process.platform
-log_debug('platform:', platform)
-const WR_CL_VERSION = 'v1.3.0'
-const REPO_BASE = 'https://github.com/lanseria/wr-cl/releases/download'
+const platformKey = target
+  ? PLATFORM_MAP[target]
+  : process.platform === 'win32'
+    ? 'win64'
+    : process.platform === 'darwin'
+      ? (process.arch === 'arm64' ? 'mac_arm64' : 'mac_amd64')
+      : 'linux_amd64'
 
-function getWrClInfo() {
-  const isWin = platform === 'windows'
-  const isMac = platform === 'darwin'
-  const platformSuffix = isWin ? 'windows' : isMac ? 'macos' : 'linux'
-  const downloadURL = `${REPO_BASE}/${WR_CL_VERSION}/wr-cl-${platformSuffix}.tar.gz`
+log_debug('Detected platform:', platformKey)
+const GO2RTC_VERSION = 'v1.9.8'
+const REPO_BASE = 'https://github.com/AlexxIT/go2rtc/releases/download'
+
+// 更新为go2rtc的下载配置[6,8](@ref)
+function getGo2RTCInfo() {
+  const isWindows = platformKey.startsWith('win')
+  const isMac = platformKey.startsWith('mac')
+  const isLinux = platformKey.startsWith('linux')
+
+  let binaryName
+  switch (platformKey) {
+    case 'win64':
+      binaryName = 'go2rtc_win64.zip'
+      break
+    case 'mac_arm64':
+      binaryName = 'go2rtc_mac_arm64.zip'
+      break
+    case 'linux_amd64':
+      binaryName = 'go2rtc_linux_amd64'
+      break
+    default:
+      throw new Error(`Unsupported platform: ${platformKey}`)
+  }
 
   return {
-    name: 'wr-cl',
-    targetBinaryName: isWin ? 'wr-cl.exe' : 'wr-cl',
-    targetBinaryPath: `wr-cl-${SIDECAR_HOST}${isWin ? '.exe' : ''}`,
-    baseBinaryPath: `wr-cl${isWin ? '.exe' : ''}`, // New field for the base binary name
-    configTemplate: 'config.json.template',
-    configTarget: 'config.json',
-    downloadURL,
-    isWin,
+    name: 'go2rtc',
+    downloadFileName: binaryName,
+    targetBinaryPath: `go2rtc-${SIDECAR_HOST}${isWindows ? '.exe' : ''}`,
+    downloadURL: `${REPO_BASE}/${GO2RTC_VERSION}/${binaryName}`,
+    isArchive: binaryName.endsWith('.zip'),
+    isWindows,
+    isMac,
+    isLinux,
   }
 }
 
+// 保留原有下载逻辑，新增ZIP解压支持
 async function downloadFile(url, path) {
   const options = {}
-  const httpProxy
-    = process.env.HTTP_PROXY
-      || process.env.http_proxy
-      || process.env.HTTPS_PROXY
-      || process.env.https_proxy
+  const httpProxy = process.env.HTTP_PROXY || process.env.https_proxy
 
   if (httpProxy) {
-    log_debug('Using proxy:', ProxyAgent)
+    log_debug('Using proxy:', httpProxy)
     const proxyAgent = new ProxyAgent()
     options.agent = proxyAgent
-    log_debug('Using proxy:', httpProxy)
   }
 
   const response = await fetch(url, {
@@ -87,88 +101,77 @@ async function downloadFile(url, path) {
 
   const buffer = await response.arrayBuffer()
   await fsp.writeFile(path, new Uint8Array(buffer))
-  log_success(`download finished: ${url}`)
+  log_success(`Download completed: ${url}`)
 }
 
-async function copyFile(src, dest) {
-  try {
-    await fsp.copyFile(src, dest)
-    if (!getWrClInfo().isWin)
-      await fsp.chmod(dest, 0o755) // Set executable permissions on Unix-like systems
-    log_success(`File copied and permissions set: ${dest}`)
-  }
-  catch (err) {
-    log_error(`Error copying file from ${src} to ${dest}:`, err)
-    throw err
-  }
+// 新增ZIP解压功能
+async function extractZip(filePath, targetDir) {
+  const zip = new AdmZip(filePath)
+  zip.extractAllTo(targetDir, true)
+  log_success(`ZIP extracted to: ${targetDir}`)
 }
 
-async function resolveWrCl() {
-  const info = getWrClInfo()
+// 更新文件处理逻辑
+async function setupGo2RTC() {
+  const info = getGo2RTCInfo()
   const tempDir = TEMP_DIR
-  const tempTarGz = path.join(tempDir, 'wr-cl.tar.gz')
+  const tempFile = path.join(tempDir, info.downloadFileName)
 
-  // Create directories
-  const binariesDir = path.join(cwd, 'src-tauri/sidecar')
-  const resourcesDir = path.join(cwd, 'src-tauri/resources')
-
-  await fsp.mkdir(binariesDir, { recursive: true })
-  await fsp.mkdir(resourcesDir, { recursive: true })
+  // 创建目标目录
+  const binDir = path.join(cwd, 'src-tauri/sidecar')
+  await fsp.mkdir(binDir, { recursive: true })
   await fsp.mkdir(tempDir, { recursive: true })
 
-  const archSpecificBinaryPath = path.join(binariesDir, info.targetBinaryPath)
-  const baseBinaryPath = path.join(binariesDir, info.baseBinaryPath)
-  const configPath = path.join(resourcesDir, info.configTarget)
+  const targetPath = path.join(binDir, info.targetBinaryPath)
 
-  // Skip if files exist and not forced
-  if (!FORCE
-    && fs.existsSync(archSpecificBinaryPath)
-    && fs.existsSync(baseBinaryPath)
-    && fs.existsSync(configPath)) {
-    log_info('Files already exist, skipping download')
+  // 跳过已存在文件
+  if (!FORCE && fs.existsSync(targetPath)) {
+    log_info('Binary already exists, skipping download')
     return
   }
 
   try {
-    // Download the tar.gz file
-    log_debug('downloading...')
-    await downloadFile(info.downloadURL, tempTarGz)
-    log_debug('tempTarGz: ', tempTarGz)
+    // 下载文件
+    log_debug(`Downloading from: ${info.downloadURL}`)
+    await downloadFile(info.downloadURL, tempFile)
 
-    // Extract the archive
-    await extract({
-      file: tempTarGz,
-      cwd: tempDir,
-    })
+    // 处理压缩文件
+    if (info.isArchive) {
+      await extractZip(tempFile, tempDir)
+      // 查找解压后的可执行文件
+      const extractedFiles = await fsp.readdir(tempDir)
+      const execFile = extractedFiles.find(f =>
+        f === info.targetBinaryPath || f.endsWith('.exe'),
+      )
+      if (!execFile)
+        throw new Error('No executable found in archive')
+      await fsp.rename(path.join(tempDir, execFile), targetPath)
+    }
+    else {
+      // 直接移动非压缩文件
+      await fsp.rename(tempFile, targetPath)
+    }
 
-    // Move files to their destinations
-    const extractedBinary = path.join(tempDir, info.targetBinaryName)
+    // 设置执行权限
+    if (!info.isWindows) {
+      await fsp.chmod(targetPath, 0o755)
+      log_debug('Executable permissions set')
+    }
 
-    // First, copy the binary to the architecture-specific path
-    await copyFile(extractedBinary, archSpecificBinaryPath)
-
-    // Then, copy the same binary to the base path
-    // await copyFile(extractedBinary, baseBinaryPath)
-
-    // Handle config file
-    const extractedConfig = path.join(tempDir, info.configTemplate)
-    await fsp.rename(extractedConfig, configPath)
-
-    log_success('wr-cl setup completed successfully')
+    log_success(`go2rtc installed to: ${targetPath}`)
   }
   catch (err) {
-    log_error('Error during wr-cl setup:', err.message)
+    log_error('Installation failed:', err.message)
     throw err
   }
   finally {
-    // Cleanup temp directory
-    // Commented out for debugging purposes
-    // await fsp.rm(tempDir, { recursive: true, force: true })
+    // 清理临时目录
+    await fsp.rm(tempDir, { recursive: true, force: true })
   }
 }
 
-// Main execution
-resolveWrCl().catch((err) => {
+// 执行主程序
+setupGo2RTC().catch((err) => {
   log_error('Fatal error:', err)
   process.exit(1)
 })

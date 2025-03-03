@@ -23,7 +23,7 @@
       "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "sidecar/wr-cl",
+          "name": "sidecar/go2rtc",
           "args": true,
           "sidecar": true
         }
