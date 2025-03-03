@@ -1,0 +1,35 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:path:allow-join",
+    "core:path:default",
+    "fs:allow-app-write",
+    "fs:allow-app-write-recursive",
+    "fs:allow-appcache-write",
+    {
+      "identifier": "fs:scope-temp",
+      "allow": [
+        "$TEMP/*",
+        "$APP/*",
+        "$DOCUMENT/*"
+      ]
+    },
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "sidecar/wr-cl",
+          "args": true,
+          "sidecar": true
+        }
+      ]
+    },
+    "fs:default",
+    "dialog:default"
+  ]
+}

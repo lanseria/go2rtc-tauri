@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["replacements", "file_settings", "advanced"],
+  "properties": {
+    "replacements": {
+      "type": "object",
+      "required": ["pattern_type", "rules"],
+      "properties": {
+        "pattern_type": {
+          "type": "string",
+          "enum": ["plain", "regex"]
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["old_text", "new_text", "options"],
+            "properties": {
+              "old_text": {
+                "type": "string"
+              },
+              "new_text": {
+                "type": "string"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "case_sensitive": {
+                    "type": "boolean"
+                  },
+                  "whole_word": {
+                    "type": "boolean"
+                  },
+                  "preserve_format": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "file_settings": {
+      "type": "object",
+      "required": ["input_path", "file_types", "output_path"],
+      "properties": {
+        "input_path": {
+          "type": "string"
+        },
+        "file_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output_path": {
+          "type": "string"
+        }
+      }
+    },
+    "advanced": {
+      "type": "object",
+      "required": ["max_workers", "timeout"],
+      "properties": {
+        "max_workers": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}
