@@ -28,6 +28,11 @@ go2rtc 支持的系统架构
 - [go2rtc_mac_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_mac_arm64.zip)
 - [go2rtc_win64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_win64.zip)
 
+## 功能
+
+- 主页面有“配置编辑”， “视频预览”， “日志展示” 以及 “运行/停止” 的按钮入口
+- 通过 vue3 router 来实现页面跳转，如主页面，配置编辑，视频预览，日志展示
+
 ## 发布
 
 ```bash

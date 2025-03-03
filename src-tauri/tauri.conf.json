@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "WordReplacer",
+        "title": "go2rtc-gui",
         "width": 800,
         "height": 600
       }
