@@ -10,6 +10,5 @@ declare module 'vue' {
   export interface GlobalComponents {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    WrClConfig: typeof import('./src/components/WrClConfig.vue')['default']
   }
 }
