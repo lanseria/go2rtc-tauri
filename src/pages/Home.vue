@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Child } from '@tauri-apps/plugin-shell'
+import { write } from 'node:fs'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import { executeSidecar } from '~/composables/sidecarExecutor'
@@ -19,21 +20,43 @@ function handleLog(data: string) {
     term.writeln(data.trimEnd())
   }
 }
+// async function toggleRunning() {
+//   isRunning.value = !isRunning.value
+//   if (isRunning.value) {
+//     if (child) {
+//       child.kill()
+//       child = undefined
+//     }
+//   }
+//   else {
+//     term.clear()
+//     term.writeln('sidecar init')
+//     // await startSidecar(currentConfig.value)
+//     const result = await executeSidecar(currentConfig.value, handleLog)
+//     term.writeln('sidecar init')
+//     if (result.success) {
+//       child = result.child
+//       term.writeln('sidecar started')
+//     }
+//   }
+// }
+
 async function toggleRunning() {
-  isRunning.value = !isRunning.value
   if (isRunning.value) {
+    isRunning.value = false
+    term.writeln('sidecar stop')
     if (child) {
       child.kill()
       child = undefined
     }
   }
   else {
-    term.clear()
-    // await startSidecar(currentConfig.value)
+    isRunning.value = true
+    term.writeln('sidecar start')
     const result = await executeSidecar(currentConfig.value, handleLog)
     if (result.success) {
       child = result.child
-      child?.write('\r\n')
+      term.writeln('sidecar started')
     }
   }
 }
@@ -47,12 +70,11 @@ function openConfig() {
 
 onMounted(() => {
   if (terminalRef.value) {
-    term = new Terminal({
-
-    })
+    term = new Terminal()
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.value)
+    term.write('term init')
   }
 })
 
@@ -73,20 +95,22 @@ onUnmounted(() => {
       </h1>
       <div class="flex gap-2">
         <button
-          class="rounded bg-sky-500 px-4 py-2 text-white transition hover:bg-sky-600"
+          class="bg-sky-6 btn hover:bg-sky-7"
+          :disabled="isRunning"
           @click="openConfig"
         >
           视频流查看
         </button>
         <button
-          class="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+          class="btn"
+          :disabled="isRunning"
           @click="openConfig"
         >
           配置编辑
         </button>
         <button
           class="rounded px-4 py-2 text-white transition" :class="[
-            isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600',
+            isRunning ? 'bg-red-6 btn hover:bg-red-7' : 'bg-green-6 btn hover:bg-green-7',
           ]"
           @click="toggleRunning"
         >

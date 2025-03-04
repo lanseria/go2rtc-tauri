@@ -6,7 +6,7 @@
     "bin": "ffmpeg"
   },
   "log": {
-    "format": "text",
+    "format": "color",
     "level": "info",
     "output": "stdout",
     "time": "UNIXMS"
@@ -17,6 +17,9 @@
   },
   "srtp": {
     "listen": ":8443"
+  },
+  "streams": {
+    "ly-9": "ffmpeg:/Users/zhangchao/Movies/bbdown/ly-9.hevc.mp4"
   },
   "webrtc": {
     "listen": ":8555/tcp",
