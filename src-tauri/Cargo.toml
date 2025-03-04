@@ -1,7 +1,7 @@
 [package]
-name = "word-replacer-app"
+name = "go2rtc-tauri"
 version = "1.0.0"
-description = "A simple word replacer written in Rust using Tauri."
+description = "A go2rtc GUI tool"
 authors = ["you"]
 edition = "2021"
 repository = "https://github.com/Uninen/tauri-vue-template"

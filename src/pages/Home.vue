@@ -1,15 +1,41 @@
 <script lang="ts" setup>
-const isRunning = ref(false)
-const router = useRouter()
-const logs = ref([
-  '系统初始化...',
-  '加载配置文件...',
-  '等待操作...',
-])
+import type { Child } from '@tauri-apps/plugin-shell'
+import { FitAddon } from '@xterm/addon-fit'
+import { Terminal } from '@xterm/xterm'
+import { executeSidecar } from '~/composables/sidecarExecutor'
+import { currentConfig } from '~/composables/store'
+import '@xterm/xterm/css/xterm.css'
 
-function toggleRunning() {
+const isRunning = ref(false)
+const terminalRef = useTemplateRef('terminalRef')
+const router = useRouter()
+let child: Child | undefined
+let term: Terminal
+// 创建一个日志处理函数
+function handleLog(data: string) {
+  // 这里可以根据需要处理日志
+  // 比如更新UI、存储到状态管理中等
+  if (term) {
+    term.writeln(data.trimEnd())
+  }
+}
+async function toggleRunning() {
   isRunning.value = !isRunning.value
-  logs.value.push(`系统${isRunning.value ? '启动' : '停止'}于 ${new Date().toLocaleTimeString()}`)
+  if (isRunning.value) {
+    if (child) {
+      child.kill()
+      child = undefined
+    }
+  }
+  else {
+    term.clear()
+    // await startSidecar(currentConfig.value)
+    const result = await executeSidecar(currentConfig.value, handleLog)
+    if (result.success) {
+      child = result.child
+      child?.write('\r\n')
+    }
+  }
 }
 
 function openConfig() {
@@ -18,24 +44,48 @@ function openConfig() {
     path: '/configuration',
   })
 }
+
+onMounted(() => {
+  if (terminalRef.value) {
+    term = new Terminal({
+
+    })
+    const fitAddon = new FitAddon()
+    term.loadAddon(fitAddon)
+    term.open(terminalRef.value)
+  }
+})
+
+onUnmounted(() => {
+  if (child) {
+    child.kill()
+    child = undefined
+  }
+})
 </script>
 
 <template>
-  <div class="w-full h-full bg-gray-100 p-4">
+  <div class="h-full w-full bg-gray-100 p-4">
     <!-- Header with controls -->
-    <div class="flex justify-between items-center mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-bold">
         控制面板
       </h1>
       <div class="flex gap-2">
         <button
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          class="rounded bg-sky-500 px-4 py-2 text-white transition hover:bg-sky-600"
+          @click="openConfig"
+        >
+          视频流查看
+        </button>
+        <button
+          class="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
           @click="openConfig"
         >
           配置编辑
         </button>
         <button
-          class="px-4 py-2 rounded text-white transition" :class="[
+          class="rounded px-4 py-2 text-white transition" :class="[
             isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600',
           ]"
           @click="toggleRunning"
@@ -46,27 +96,13 @@ function openConfig() {
     </div>
 
     <!-- Main content area -->
-    <div class="grid grid-cols-2 gap-4 h-[calc(100%-4rem)]">
-      <!-- Video Preview -->
-      <div class="bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold mb-2">
-          视频预览
-        </h2>
-        <div class="bg-gray-800 h-[calc(100%-2rem)] rounded flex items-center justify-center">
-          <span class="text-gray-400">视频预览区域</span>
-        </div>
-      </div>
-
+    <div class="gap-4">
       <!-- Log Display -->
-      <div class="bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold mb-2">
+      <div class="rounded-lg bg-white p-4 shadow">
+        <h2 class="mb-2 text-lg font-semibold">
           日志展示
         </h2>
-        <div class="bg-gray-900 text-gray-200 p-4 h-[calc(100%-2rem)] rounded font-mono text-sm overflow-y-auto">
-          <div v-for="(log, index) in logs" :key="index" class="mb-1">
-            {{ log }}
-          </div>
-        </div>
+        <div ref="terminalRef" class="w-full overflow-hidden" />
       </div>
     </div>
   </div>

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "word-replacer-app",
+  "productName": "go2rtc-tauri",
   "version": "1.0.0",
-  "identifier": "com.word-replacer.app",
+  "identifier": "com.go2rtc.tauri",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",

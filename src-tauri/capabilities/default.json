@@ -29,6 +29,26 @@
         }
       ]
     },
+    {
+      "identifier": "shell:allow-kill",
+      "allow": [
+        {
+          "name": "sidecar/go2rtc",
+          "args": true,
+          "sidecar": true
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-stdin-write",
+      "allow": [
+        {
+          "name": "sidecar/go2rtc",
+          "args": true,
+          "sidecar": true
+        }
+      ]
+    },
     "fs:default",
     "dialog:default"
   ]
