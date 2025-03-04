@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { Child } from '@tauri-apps/plugin-shell'
-import { write } from 'node:fs'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import { executeSidecar } from '~/composables/sidecarExecutor'
@@ -20,26 +19,6 @@ function handleLog(data: string) {
     term.writeln(data.trimEnd())
   }
 }
-// async function toggleRunning() {
-//   isRunning.value = !isRunning.value
-//   if (isRunning.value) {
-//     if (child) {
-//       child.kill()
-//       child = undefined
-//     }
-//   }
-//   else {
-//     term.clear()
-//     term.writeln('sidecar init')
-//     // await startSidecar(currentConfig.value)
-//     const result = await executeSidecar(currentConfig.value, handleLog)
-//     term.writeln('sidecar init')
-//     if (result.success) {
-//       child = result.child
-//       term.writeln('sidecar started')
-//     }
-//   }
-// }
 
 async function toggleRunning() {
   if (isRunning.value) {
@@ -65,6 +44,13 @@ function openConfig() {
   // 实现配置编辑功能
   router.push({
     path: '/configuration',
+  })
+}
+
+function openVideo() {
+  // 实现配置编辑功能
+  router.push({
+    path: '/video',
   })
 }
 
@@ -96,8 +82,8 @@ onUnmounted(() => {
       <div class="flex gap-2">
         <button
           class="bg-sky-6 btn hover:bg-sky-7"
-          :disabled="isRunning"
-          @click="openConfig"
+          :disabled="!isRunning"
+          @click="openVideo"
         >
           视频流查看
         </button>
