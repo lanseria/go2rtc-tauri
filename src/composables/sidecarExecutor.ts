@@ -62,26 +62,21 @@ export async function executeSidecar(
     }
   }
 }
-
 /**
- * Kill process running on specified port
- * @param port Port number to kill process on
- * @returns Promise with success message or error
+ * killPortProcess
  */
 export async function killPortProcess(port: number): Promise<string> {
-  // Port validation
   if (port === 0 || port > 65535) {
     throw new Error('Invalid port number')
   }
 
-  // Get current platform
   const os = await platform()
 
   try {
     let command: string[]
 
     switch (os) {
-      case 'macos': // macOS
+      case 'macos':
       case 'linux':
         command = [
           'sh',
@@ -90,11 +85,14 @@ export async function killPortProcess(port: number): Promise<string> {
         ]
         break
 
-      case 'windows': // Windows
+      case 'windows':
         command = [
           'cmd',
           '/C',
-          `FOR /F "tokens=5" %P IN ('netstat -ano ^| findstr :${port}') DO taskkill /F /PID %P`,
+          // 修改点 1: 使用英文列名查找
+          // 修改点 2: 抑制所有输出
+          // 修改点 3: 增加错误处理
+          `(for /F "tokens=5" %P in ('netstat -ano ^| findstr "LISTENING" ^| findstr ":${port}"') do taskkill /F /PID %P) >nul 2>nul & exit 0`,
         ]
         break
 
