@@ -25,7 +25,7 @@ function handleLog(data: string) {
 async function toggleRunning() {
   if (isRunning.value) {
     isRunning.value = false
-    term.writeln('sidecar stop')
+    term.writeln('go2rtc sidecar stop')
     if (child) {
       child.kill()
       child = undefined
@@ -33,9 +33,9 @@ async function toggleRunning() {
   }
   else {
     isRunning.value = true
-    term.writeln('sidecar start')
+    term.writeln('go2rtc sidecar start')
     const ports = extractPorts(currentConfig.value)
-    term.writeln(`ports: ${ports}`)
+    term.writeln(`find config use ports: ${ports}`)
     for await (const port of ports) {
       const result = await killPortProcess(port)
       term.writeln(`kill port ${port} result: ${result}`)
@@ -43,7 +43,7 @@ async function toggleRunning() {
     const result = await executeSidecar(currentConfig.value, handleLog)
     if (result.success) {
       child = result.child
-      term.writeln('sidecar started')
+      term.writeln('go2rtc sidecar started')
     }
   }
 }
@@ -65,7 +65,7 @@ onMounted(() => {
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.value)
-    term.write('term init')
+    term.write('term init finish')
   }
 })
 

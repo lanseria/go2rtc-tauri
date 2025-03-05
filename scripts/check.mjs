@@ -140,9 +140,19 @@ async function setupGo2RTC() {
       await extractZip(tempFile, tempDir)
       // 查找解压后的可执行文件
       const extractedFiles = await fsp.readdir(tempDir)
-      const execFile = extractedFiles.find(f =>
-        f === info.targetBinaryPath || f.endsWith('.exe'),
-      )
+      console.log(extractedFiles)
+      console.log(info.targetBinaryPath)
+      let execFile
+      if (process.platform === 'darwin') {
+        execFile = extractedFiles.find(f =>
+          f === 'go2rtc',
+        )
+      }
+      else {
+        execFile = extractedFiles.find(f =>
+          f === info.targetBinaryPath || f.endsWith('.exe'),
+        )
+      }
       if (!execFile)
         throw new Error('No executable found in archive')
       await fsp.rename(path.join(tempDir, execFile), targetPath)

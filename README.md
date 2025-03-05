@@ -4,6 +4,8 @@ A go2rtc GUI tool
 
 ## 介绍
 
+![](./docs/demo.jpg)
+
 这个项目是一个简单 go2rtc GUI 工具，使用`Rust`编写，并使用`Vue3`作为前端框架。
 
 借用了 [go2rtc](https://github.com/AlexxIT/go2rtc) 可执行文件，以实现跨平台(windows/macos/linux)
@@ -33,6 +35,7 @@ go2rtc 支持的系统架构
 - 主页面有“配置编辑”， “视频预览”， “日志展示” 以及 “运行/停止” 的按钮入口
 - 通过 vue3 router 来实现页面跳转，如主页面，配置编辑，视频预览，日志展示
 - 配置 https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json
+- 会在运行前，kill 占用需要端口的程序，并启动 go2rtc
 
 ## AI Prompts
 
@@ -40,7 +43,7 @@ go2rtc 支持的系统架构
 
 ## 缺陷
 
-- 暂时解决不了 js 直接调用 tauri2.0 sidecar 时，无法实时输出 stdout/stderr [已解决]
+- ~~暂时解决不了 js 直接调用 tauri2.0 sidecar 时，无法实时输出 stdout/stderr~~ [已解决]
 
 ## 发布
 
