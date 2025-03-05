@@ -32,10 +32,15 @@ go2rtc 支持的系统架构
 
 - 主页面有“配置编辑”， “视频预览”， “日志展示” 以及 “运行/停止” 的按钮入口
 - 通过 vue3 router 来实现页面跳转，如主页面，配置编辑，视频预览，日志展示
+- 配置 https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json
+
+## AI Prompts
+
+- 通过这个 [schema.json](https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json) 来生成配置编辑页面，使用`vue3`与`unocss`实现，在这个页面代码的基础上，拆分页面，添加一个切换按钮，初始化是显示组件化的配置编辑组件，切换到非组件化组件时，显示一个输入框。为这两个组件单独创建一个单独的组件，通过切换按钮来切换页面。
 
 ## 缺陷
 
-- 暂时解决不了 js 直接调用 tauri2.0 sidecar 时，无法实时输出 stdout/stderr
+- 暂时解决不了 js 直接调用 tauri2.0 sidecar 时，无法实时输出 stdout/stderr [已解决]
 
 ## 发布
 

@@ -1,7 +1,7 @@
 import type { Child } from '@tauri-apps/plugin-shell'
 // import { join, tempDir } from '@tauri-apps/api/path'
 // import { writeTextFile } from '@tauri-apps/plugin-fs'
-import { invoke } from '@tauri-apps/api/core'
+import { platform } from '@tauri-apps/plugin-os'
 
 import { Command } from '@tauri-apps/plugin-shell'
 
@@ -15,21 +15,8 @@ export interface LogCallback {
   (log: string): void
 }
 
-export async function startSidecar(config: any) {
-  try {
-    const result = await invoke('spawn_sidecar', {
-      config: JSON.stringify(config),
-    })
-    // eslint-disable-next-line no-console
-    console.log('Sidecar输出:', result)
-  }
-  catch (error) {
-    console.error('执行失败:', error)
-  }
-}
-
 export async function executeSidecar(
-  config: any,
+  config: Go2RTCConfig,
   onLog?: LogCallback,
 ): Promise<ExecutionResult> {
   try {
@@ -75,5 +62,52 @@ export async function executeSidecar(
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred',
     }
+  }
+}
+
+/**
+ * Kill process running on specified port
+ * @param port Port number to kill process on
+ * @returns Promise with success message or error
+ */
+export async function killPortProcess(port: number): Promise<string> {
+  // Port validation
+  if (port === 0 || port > 65535) {
+    throw new Error('Invalid port number')
+  }
+
+  // Get current platform
+  const os = await platform()
+
+  try {
+    let command: string[]
+
+    switch (os) {
+      case 'macos': // macOS
+      case 'linux':
+        command = [
+          'sh',
+          '-c',
+          `lsof -ti:${port} | xargs kill -9 || true`,
+        ]
+        break
+
+      case 'windows': // Windows
+        command = [
+          'cmd',
+          '/C',
+          `FOR /F "tokens=5" %P IN ('netstat -ano ^| findstr :${port}') DO taskkill /F /PID %P`,
+        ]
+        break
+
+      default:
+        throw new Error('Unsupported operating system')
+    }
+
+    await Command.create(command[0], command.slice(1)).execute()
+    return `Port ${port} process terminated`
+  }
+  catch (error: any) {
+    throw new Error(`Failed to kill process on port ${port}: ${error}`)
   }
 }

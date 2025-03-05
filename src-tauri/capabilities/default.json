@@ -11,6 +11,22 @@
     "fs:allow-app-write",
     "fs:allow-app-write-recursive",
     "fs:allow-appcache-write",
+    "opener:allow-open-url",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "sh",
+          "cmd": "sh",
+          "args": true
+        },
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": true
+        }
+      ]
+    },
     {
       "identifier": "fs:scope-temp",
       "allow": [
@@ -50,6 +66,8 @@
       ]
     },
     "fs:default",
-    "dialog:default"
+    "dialog:default",
+    "opener:default",
+    "os:default"
   ]
 }

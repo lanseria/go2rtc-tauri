@@ -68,7 +68,7 @@
       "fileMatch": [
         "go2rtc.json"
       ],
-      "url": "https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json"
+      "url": "./src/composables/schema.json"
     }
   ]
 }

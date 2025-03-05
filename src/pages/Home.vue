@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import type { Child } from '@tauri-apps/plugin-shell'
+import { invoke } from '@tauri-apps/api/core'
+import { openUrl } from '@tauri-apps/plugin-opener'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
-import { executeSidecar } from '~/composables/sidecarExecutor'
+import { executeSidecar, killPortProcess } from '~/composables/sidecarExecutor'
 import { currentConfig } from '~/composables/store'
+import { extractPorts } from '~/composables/utils'
 import '@xterm/xterm/css/xterm.css'
 
 const isRunning = ref(false)
@@ -32,6 +35,12 @@ async function toggleRunning() {
   else {
     isRunning.value = true
     term.writeln('sidecar start')
+    const ports = extractPorts(currentConfig.value)
+    term.writeln(`ports: ${ports}`)
+    for await (const port of ports) {
+      const result = await killPortProcess(port)
+      term.writeln(`kill port ${port} result: ${result}`)
+    }
     const result = await executeSidecar(currentConfig.value, handleLog)
     if (result.success) {
       child = result.child
@@ -47,11 +56,8 @@ function openConfig() {
   })
 }
 
-function openVideo() {
-  // 实现配置编辑功能
-  router.push({
-    path: '/video',
-  })
+async function openVideo() {
+  await openUrl('http://127.0.0.1:1984/')
 }
 
 onMounted(() => {

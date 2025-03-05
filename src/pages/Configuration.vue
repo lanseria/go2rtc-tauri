@@ -2,30 +2,52 @@
 import { currentConfig, resetConfig } from '~/composables/store'
 
 const router = useRouter()
+const isJsonMode = ref(false)
 
-const configText = ref(JSON.stringify(currentConfig.value, null, 2))
+const configText = computed({
+  get: () => JSON.stringify(currentConfig.value, null, 2),
+  set: (value) => {
+    try {
+      const jsonData = JSON.parse(value)
+      currentConfig.value = jsonData
+    }
+    catch (e) {
+      console.error('配置格式错误，请检查 JSON 格式', e)
+    }
+  },
+})
 
 function goBack() {
   router.back()
 }
 
 function saveConfig() {
-  try {
-    // 尝试解析 JSON 以验证格式
-    const jsonData = JSON.parse(configText.value)
-    // TODO: 实际保存逻辑
-    console.warn('配置已保存')
-    currentConfig.value = jsonData
-    goBack()
+  if (isJsonMode.value) {
+    try {
+      // 尝试解析 JSON 以验证格式
+      const jsonData = JSON.parse(configText.value)
+      // TODO: 实际保存逻辑
+      console.warn('配置已保存')
+      currentConfig.value = jsonData
+      goBack()
+    }
+    catch (e) {
+      console.error('配置格式错误，请检查 JSON 格式', e)
+    }
   }
-  catch (e) {
-    console.error('配置格式错误，请检查 JSON 格式', e)
+  else {
+    // 组件化编辑模式下直接保存
+    console.warn('配置已保存')
+    goBack()
   }
 }
 
 function handleReset() {
   resetConfig()
-  configText.value = JSON.stringify(currentConfig.value, null, 2)
+}
+
+function toggleMode() {
+  isJsonMode.value = !isJsonMode.value
 }
 </script>
 
@@ -45,10 +67,17 @@ function handleReset() {
       </h1>
       <div class="flex-1" />
       <div class="flex gap-2">
+        <!-- Mode toggle button -->
+        <button
+          class="rounded bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
+          @click="toggleMode"
+        >
+          {{ isJsonMode ? '切换到表单模式' : '切换到JSON模式' }}
+        </button>
         <!-- Reset button -->
         <button
           class="rounded bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
-          @click="handleReset()"
+          @click="handleReset"
         >
           重置
         </button>
@@ -62,20 +91,26 @@ function handleReset() {
       </div>
     </div>
 
-    <!-- Config Text Editor -->
+    <!-- Config Editor -->
     <div class="h-[calc(100%-4rem)]">
-      <textarea
-        v-model="configText"
-        class="h-full w-full resize-none rounded-lg bg-white p-4 text-sm font-mono shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="在此输入配置..."
-      />
+      <Transition
+        mode="out-in"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 transform -translate-x-2"
+        enter-to-class="opacity-100 transform translate-x-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100 transform translate-x-0"
+        leave-to-class="opacity-0 transform translate-x-2"
+      >
+        <JsonEditor
+          v-if="isJsonMode"
+          v-model="configText"
+        />
+        <ConfigEditor
+          v-else
+          v-model="currentConfig"
+        />
+      </Transition>
     </div>
   </div>
 </template>
-
-<style lang="css" scoped>
-textarea {
-  /* 设置等宽字体以更好地显示代码 */
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-}
-</style>
