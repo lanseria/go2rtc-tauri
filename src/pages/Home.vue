@@ -13,10 +13,14 @@ const terminalRef = useTemplateRef('terminalRef')
 const router = useRouter()
 let child: Child | undefined
 let term: Terminal
-// 创建一个日志处理函数
-function handleLog(data: string) {
-  // 这里可以根据需要处理日志
-  // 比如更新UI、存储到状态管理中等
+
+function handleLogFormat(data: string) {
+  if (term) {
+    term.writeln(`[Home.vue] ${data}`)
+  }
+}
+
+function handleLogRemoveEnd(data: string) {
   if (term) {
     term.writeln(data.trimEnd())
   }
@@ -25,7 +29,7 @@ function handleLog(data: string) {
 async function toggleRunning() {
   if (isRunning.value) {
     isRunning.value = false
-    term.writeln('go2rtc sidecar stop')
+    handleLogFormat('go2rtc sidecar stop')
     if (child) {
       child.kill()
       child = undefined
@@ -33,30 +37,29 @@ async function toggleRunning() {
   }
   else {
     isRunning.value = true
-    term.writeln('go2rtc sidecar start')
+    handleLogFormat('go2rtc sidecar start')
     const ports = extractPorts(currentConfig.value)
-    term.writeln(`find config use ports: ${ports}`)
+    handleLogFormat(`find config use ports: ${ports}`)
     for await (const port of ports) {
       const result = await killPortProcess(port)
-      term.writeln(`kill port ${port} result: ${result}`)
+      handleLogFormat(`kill port ${port} result: ${result}`)
     }
-    const result = await executeSidecar(currentConfig.value, handleLog)
+    const result = await executeSidecar(currentConfig.value, handleLogRemoveEnd)
     if (result.success) {
       child = result.child
-      term.writeln('go2rtc sidecar started')
+      handleLogFormat('go2rtc sidecar started')
     }
   }
 }
 
 function openConfig() {
-  // 实现配置编辑功能
   router.push({
     path: '/configuration',
   })
 }
 
 async function openVideo() {
-  await openUrl('http://127.0.0.1:1984/')
+  await openUrl(`http://127.0.0.1${currentConfig.value.api.listen}`)
 }
 
 onMounted(() => {
@@ -65,7 +68,7 @@ onMounted(() => {
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.value)
-    term.write('term init finish')
+    handleLogFormat('term init finish')
   }
 })
 
@@ -91,12 +94,14 @@ onUnmounted(() => {
           @click="openVideo"
         >
           视频流查看
+          <div class="i-carbon-arrow-up-right" />
         </button>
         <button
           class="btn"
           :disabled="isRunning"
           @click="openConfig"
         >
+          <div class="i-carbon-document-configuration" />
           配置编辑
         </button>
         <button
@@ -105,6 +110,8 @@ onUnmounted(() => {
           ]"
           @click="toggleRunning"
         >
+          <div v-if="isRunning" class="i-carbon-stop-filled-alt" />
+          <div v-else class="i-carbon-play-filled-alt" />
           {{ isRunning ? '停止' : '运行' }}
         </button>
       </div>

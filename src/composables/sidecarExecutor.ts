@@ -26,8 +26,6 @@ export async function executeSidecar(
     ])
     command.on('close', (data) => {
       const log = `command finished with code ${data.code} and signal ${data.signal}`
-      if (onLog)
-        onLog(log)
       // eslint-disable-next-line no-console
       console.debug(log)
     })
