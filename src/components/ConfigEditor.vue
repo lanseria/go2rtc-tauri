@@ -67,9 +67,18 @@ function removeStream(name: string) {
         <FormField label="Listen Address" path="api.listen">
           <input v-model="formData.api.listen" type="text" class="input">
         </FormField>
-        <FormField label="Base Path" path="api.base_path">
+        <FormField label="Origin" path="api.origin">
+          <input v-model="formData.api.origin" type="text" class="input">
+        </FormField>
+        <!-- <FormField label="Base Path" path="api.base_path">
           <input v-model="formData.api.base_path" type="text" class="input">
         </FormField>
+        <FormField label="Username" path="api.username">
+          <input v-model="formData.api.username" type="text" class="input">
+        </FormField>
+        <FormField label="Password" path="api.password">
+          <input v-model="formData.api.password" type="text" class="input">
+        </FormField> -->
       </div>
     </SectionCard>
 
@@ -98,8 +107,8 @@ function removeStream(name: string) {
       <div v-for="(url, name, index) in formData.streams" :key="index" class="stream-item group">
         <div class="grid grid-cols-[1fr_auto] items-center gap-2">
           <FormField :label="`Stream ${index + 1}`">
-            <div class="flex gap-2">
-              <input :value="name" type="text" class="input flex-none" placeholder="Stream name" @input="onInputName(name, $event)">
+            <div class="w-full flex gap-2">
+              <input :value="name" type="text" class="input w-120px flex-none" placeholder="Stream name" @input="onInputName(name, $event)">
               <input
                 :value="url"
                 type="text"
@@ -135,10 +144,3 @@ function removeStream(name: string) {
     </SectionCard>
   </div>
 </template>
-
-<style scoped>
-/* 自定义 UnoCSS 类 */
-.input {
-  @apply px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all;
-}
-</style>

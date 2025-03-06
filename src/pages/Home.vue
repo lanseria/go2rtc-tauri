@@ -26,6 +26,22 @@ function handleLogRemoveEnd(data: string) {
   }
 }
 
+async function onStartRunning() {
+  isRunning.value = true
+  handleLogFormat('go2rtc sidecar start')
+  const ports = extractPorts(currentConfig.value)
+  handleLogFormat(`find config use ports: ${ports}`)
+  for await (const port of ports) {
+    const result = await killPortProcess(port)
+    handleLogFormat(`kill port ${port} result: ${result}`)
+  }
+  const result = await executeSidecar(currentConfig.value, handleLogRemoveEnd)
+  if (result.success) {
+    child = result.child
+    handleLogFormat('go2rtc sidecar started')
+  }
+}
+
 async function toggleRunning() {
   if (isRunning.value) {
     isRunning.value = false
@@ -36,19 +52,7 @@ async function toggleRunning() {
     }
   }
   else {
-    isRunning.value = true
-    handleLogFormat('go2rtc sidecar start')
-    const ports = extractPorts(currentConfig.value)
-    handleLogFormat(`find config use ports: ${ports}`)
-    for await (const port of ports) {
-      const result = await killPortProcess(port)
-      handleLogFormat(`kill port ${port} result: ${result}`)
-    }
-    const result = await executeSidecar(currentConfig.value, handleLogRemoveEnd)
-    if (result.success) {
-      child = result.child
-      handleLogFormat('go2rtc sidecar started')
-    }
+    onStartRunning()
   }
 }
 
@@ -62,7 +66,7 @@ async function openVideo() {
   await openUrl(`http://127.0.0.1${currentConfig.value.api.listen}`)
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (terminalRef.value) {
     term = new Terminal()
     const fitAddon = new FitAddon()
@@ -88,6 +92,8 @@ onUnmounted(() => {
         控制面板
       </h1>
       <div class="flex gap-2">
+        <AutoStartSwitch />
+        <AutoRunSwitch @auto-run="onStartRunning" />
         <button
           class="bg-sky-6 btn hover:bg-sky-7"
           :disabled="!isRunning"

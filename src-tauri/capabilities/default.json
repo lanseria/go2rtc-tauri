@@ -68,6 +68,9 @@
     "fs:default",
     "dialog:default",
     "opener:default",
-    "os:default"
+    "os:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled"
   ]
 }

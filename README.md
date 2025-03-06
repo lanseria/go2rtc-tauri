@@ -36,6 +36,8 @@ go2rtc 支持的系统架构
 - 通过 vue3 router 来实现页面跳转，如主页面，配置编辑，视频预览，日志展示
 - 配置 https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json
 - 会在运行前，kill 占用需要端口的程序，并启动 go2rtc
+- 开启自启
+- 启动自动运行
 
 ## AI Prompts
 

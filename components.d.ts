@@ -8,11 +8,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AutoRunSwitch: typeof import('./src/components/AutoRunSwitch.vue')['default']
+    AutoStartSwitch: typeof import('./src/components/AutoStartSwitch.vue')['default']
     ConfigEditor: typeof import('./src/components/ConfigEditor.vue')['default']
     FormField: typeof import('./src/components/FormField.vue')['default']
     JsonEditor: typeof import('./src/components/JsonEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SectionCard: typeof import('./src/components/SectionCard.vue')['default']
+    Switch: typeof import('./src/components/Switch.vue')['default']
   }
 }
