@@ -78,7 +78,7 @@ files_to_add=("$VERSION_FILE")
 [[ -f $PACKAGE_JSON ]] && files_to_add+=("$PACKAGE_JSON")
 [[ -f $TAURI_CONF ]] && files_to_add+=("$TAURI_CONF")
 [[ -f $CARGO_TOML ]] && files_to_add+=("$CARGO_TOML")
-
+sleep 3
 # 提交变更
 git add "${files_to_add[@]}"
 git commit -m "chore(release): bump version to v$new_version"
