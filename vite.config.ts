@@ -76,6 +76,7 @@ export default defineConfig({
       'vite-plugin-node-polyfills/shims/buffer',
       'vite-plugin-node-polyfills/shims/global',
       'vite-plugin-node-polyfills/shims/process',
+      '@tauri-apps/plugin-autostart'
     ],
   },
 })

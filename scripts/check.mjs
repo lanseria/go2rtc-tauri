@@ -43,7 +43,7 @@ const platformKey = target
       : 'linux_amd64'
 
 log_debug('Detected platform:', platformKey)
-const GO2RTC_VERSION = 'v1.9.8'
+const GO2RTC_VERSION = 'v1.9.9'
 const REPO_BASE = 'https://github.com/AlexxIT/go2rtc/releases/download'
 
 // 更新为go2rtc的下载配置[6,8](@ref)

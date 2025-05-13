@@ -62,8 +62,18 @@ function openConfig() {
   })
 }
 
+function extractPort(input: string): number {
+  const str = input.toString() // 确保是字符串
+  const parts = str.split(':') // 按冒号分割
+  const port = parts.pop() // 取最后一部分（端口号）
+  return Number.parseInt(port!, 10) // 转换为数字
+}
+
 async function openVideo() {
-  await openUrl(`http://127.0.0.1${currentConfig.value.api.listen}`)
+  if (currentConfig.value.api.listen) {
+    const port = extractPort(currentConfig.value.api.listen)
+    await openUrl(`http://127.0.0.1:${port}`)
+  }
 }
 
 onMounted(async () => {
