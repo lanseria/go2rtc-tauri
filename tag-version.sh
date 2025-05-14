@@ -73,12 +73,19 @@ else
   echo "警告：$CARGO_TOML 不存在，跳过"
 fi
 
+# 强制更新 Cargo.lock  (在 src-tauri 目录下运行)
+if [[ -f "$CARGO_TOML" ]]; then
+  (cd src-tauri && cargo update)  # 使用括号创建一个子shell，cd 到 src-tauri，然后运行 cargo update
+  echo "已强制更新 Cargo.lock"
+fi
+
 # 收集要提交的文件
 files_to_add=("$VERSION_FILE")
 [[ -f $PACKAGE_JSON ]] && files_to_add+=("$PACKAGE_JSON")
 [[ -f $TAURI_CONF ]] && files_to_add+=("$TAURI_CONF")
 [[ -f $CARGO_TOML ]] && files_to_add+=("$CARGO_TOML")
-sleep 3
+[[ -f "src-tauri/Cargo.lock" ]] && files_to_add+=("src-tauri/Cargo.lock")  # 即使在更新后也要添加
+
 # 提交变更
 git add "${files_to_add[@]}"
 git commit -m "chore(release): bump version to v$new_version"
