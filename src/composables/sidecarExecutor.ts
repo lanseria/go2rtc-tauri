@@ -4,6 +4,7 @@ import type { Child } from '@tauri-apps/plugin-shell'
 import { platform } from '@tauri-apps/plugin-os'
 
 import { Command } from '@tauri-apps/plugin-shell'
+import { writeToTerminal } from './console'
 
 interface ExecutionResult {
   success: boolean
@@ -17,7 +18,6 @@ export interface LogCallback {
 
 export async function executeSidecar(
   config: Go2RTCConfig,
-  onLog?: LogCallback,
 ): Promise<ExecutionResult> {
   try {
     const command = Command.sidecar('sidecar/go2rtc', [
@@ -30,19 +30,16 @@ export async function executeSidecar(
       console.debug(log)
     })
     command.on('error', (error) => {
-      if (onLog)
-        onLog(error)
+      writeToTerminal(error, 'executeSidecar', 'ERR')
       console.error(`command error: "${error}"`)
     })
     command.stdout.on('data', (line) => {
-      if (onLog)
-        onLog(line)
+      writeToTerminal(line, 'executeSidecar')
       // eslint-disable-next-line no-console
       console.debug(`command stdout: "${line}"`)
     })
     command.stderr.on('data', (line) => {
-      if (onLog)
-        onLog(line)
+      writeToTerminal(line, 'executeSidecar', 'ERR')
       // eslint-disable-next-line no-console
       console.debug(`command stderr: "${line}"`)
     })

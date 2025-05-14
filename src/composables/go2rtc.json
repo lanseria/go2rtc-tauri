@@ -1,6 +1,9 @@
 {
   "api": {
-    "listen": ":1984"
+    "listen": "127.0.0.1:1984",
+    "origin": "*",
+    "username": "admin",
+    "password": "pass"
   },
   "ffmpeg": {
     "bin": "ffmpeg"
@@ -10,13 +13,6 @@
     "level": "info",
     "output": "stdout",
     "time": "UNIXMS"
-  },
-  "rtsp": {
-    "listen": ":8554",
-    "default_query": "video&audio"
-  },
-  "srtp": {
-    "listen": ":8443"
   },
   "streams": {
     "ly-9": "ffmpeg:/Users/zhangchao/Movies/bbdown/ly-9.hevc.mp4"

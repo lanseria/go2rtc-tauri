@@ -70,15 +70,12 @@ function removeStream(name: string) {
         <FormField label="Origin" path="api.origin">
           <input v-model="formData.api.origin" type="text" class="input">
         </FormField>
-        <!-- <FormField label="Base Path" path="api.base_path">
-          <input v-model="formData.api.base_path" type="text" class="input">
-        </FormField>
         <FormField label="Username" path="api.username">
           <input v-model="formData.api.username" type="text" class="input">
         </FormField>
         <FormField label="Password" path="api.password">
-          <input v-model="formData.api.password" type="text" class="input">
-        </FormField> -->
+          <input v-model="formData.api.password" type="password" class="input">
+        </FormField>
       </div>
     </SectionCard>
 
@@ -108,11 +105,11 @@ function removeStream(name: string) {
         <div class="grid grid-cols-[1fr_auto] items-center gap-2">
           <FormField :label="`Stream ${index + 1}`">
             <div class="w-full flex gap-2">
-              <input :value="name" type="text" class="input w-120px flex-none" placeholder="Stream name" @input="onInputName(name, $event)">
+              <input :value="name" type="text" class="w-120px flex-none input" placeholder="Stream name" @input="onInputName(name, $event)">
               <input
                 :value="url"
                 type="text"
-                class="input flex-1"
+                class="flex-1 input"
                 placeholder="rtsp://..."
                 @input="onInputValue(name, $event)"
               >

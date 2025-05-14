@@ -1,5 +1,6 @@
 // 定义日志级别类型
 type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error'
+type TermLogLevel = 'INF' | 'WRN' | 'ERR' | 'DBG' // 你可以根据需要扩展
 
 // 定义API配置
 interface ApiConfig {

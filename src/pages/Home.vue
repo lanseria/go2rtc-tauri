@@ -3,6 +3,7 @@ import type { Child } from '@tauri-apps/plugin-shell'
 import { openUrl } from '@tauri-apps/plugin-opener'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
+import { writeToTerminal } from '~/composables/console'
 import { executeSidecar, killPortProcess } from '~/composables/sidecarExecutor'
 import { currentConfig } from '~/composables/store'
 import { extractPorts } from '~/composables/utils'
@@ -14,44 +15,32 @@ const router = useRouter()
 let child: Child | undefined
 let term: Terminal
 
-function handleLogFormat(data: string) {
-  if (term) {
-    term.writeln(`[Home.vue] ${data}`)
-  }
-}
-
-function handleLogRemoveEnd(data: string) {
-  if (term) {
-    term.writeln(data.trimEnd())
-  }
-}
-
 async function onStartRunning() {
   isRunning.value = true
-  handleLogFormat('go2rtc sidecar start')
+  writeToTerminal('go2rtc sidecar start', 'onStartRunning')
   const ports = extractPorts(currentConfig.value)
-  handleLogFormat(`find config use ports: ${ports}`)
+  writeToTerminal(`find config use ports: ${ports}`, 'onStartRunning')
   for await (const port of ports) {
     const result = await killPortProcess(port)
-    handleLogFormat(`kill port ${port} result: ${result}`)
+    writeToTerminal(`kill port ${port} result: ${result}`, 'onStartRunning')
   }
-  handleLogFormat('go2rtc sidecar start')
-  const result = await executeSidecar(currentConfig.value, handleLogRemoveEnd)
+  writeToTerminal('go2rtc sidecar start', 'onStartRunning')
+  const result = await executeSidecar(currentConfig.value)
 
   if (result.success) {
     child = result.child
-    handleLogFormat('go2rtc sidecar started')
+    writeToTerminal('go2rtc sidecar started', 'onStartRunning')
   }
   else {
-    handleLogFormat('go2rtc sidecar start fail')
-    handleLogFormat(JSON.stringify(result))
+    writeToTerminal('go2rtc sidecar start fail', 'onStartRunning')
+    writeToTerminal(JSON.stringify(result), 'onStartRunning')
   }
 }
 
 async function toggleRunning() {
   if (isRunning.value) {
     isRunning.value = false
-    handleLogFormat('go2rtc sidecar stop')
+    writeToTerminal('go2rtc sidecar stop', 'toggleRunning')
     if (child) {
       child.kill()
       child = undefined
@@ -85,10 +74,11 @@ async function openVideo() {
 onMounted(async () => {
   if (terminalRef.value) {
     term = new Terminal()
+    window.term = term
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.value)
-    handleLogFormat('term init finish')
+    writeToTerminal('term init finish', 'onMounted')
   }
 })
 
