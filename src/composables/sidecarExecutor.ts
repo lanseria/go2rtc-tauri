@@ -58,7 +58,7 @@ export async function executeSidecar(
     console.error('Sidecar execution failed:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred',
+      message: error instanceof Error ? error.message : 'Unknown error occurred, please check devtools logs.',
     }
   }
 }

@@ -35,10 +35,16 @@ async function onStartRunning() {
     const result = await killPortProcess(port)
     handleLogFormat(`kill port ${port} result: ${result}`)
   }
+  handleLogFormat('go2rtc sidecar start')
   const result = await executeSidecar(currentConfig.value, handleLogRemoveEnd)
+
   if (result.success) {
     child = result.child
     handleLogFormat('go2rtc sidecar started')
+  }
+  else {
+    handleLogFormat('go2rtc sidecar start fail')
+    handleLogFormat(JSON.stringify(result))
   }
 }
 
