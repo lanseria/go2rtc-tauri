@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { message } from '@tauri-apps/plugin-dialog'
 import { currentConfig, resetConfig } from '~/composables/store'
 
 const router = useRouter()
@@ -21,24 +22,17 @@ function goBack() {
   router.back()
 }
 
-function saveConfig() {
-  if (isJsonMode.value) {
-    try {
-      // 尝试解析 JSON 以验证格式
-      const jsonData = JSON.parse(configText.value)
-      // TODO: 实际保存逻辑
-      console.warn('配置已保存')
-      currentConfig.value = jsonData
-      goBack()
-    }
-    catch (e) {
-      console.error('配置格式错误，请检查 JSON 格式', e)
-    }
-  }
-  else {
-    // 组件化编辑模式下直接保存
-    console.warn('配置已保存')
+async function saveConfig() {
+  try {
+    const jsonData = JSON.parse(configText.value)
+    // TODO: 这里可以加 Schema 校验逻辑
+    currentConfig.value = jsonData
+    // 显式反馈
+    await message('配置已保存', { title: '成功', kind: 'info' })
     goBack()
+  }
+  catch (e: any) {
+    await message(`配置格式错误: ${e.message}`, { title: '错误', kind: 'error' })
   }
 }
 
@@ -52,7 +46,7 @@ function toggleMode() {
 </script>
 
 <template>
-  <div class="h-500px w-full bg-gray-100 p-4">
+  <div class="h-100dvh w-full overflow-auto bg-gray-100 p-4">
     <!-- Header with back button -->
     <div class="mb-4 flex items-center">
       <button

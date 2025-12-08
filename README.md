@@ -26,9 +26,9 @@ go2rtc 支持的系统架构
 
 本项目暂时仅支持 3 种最常用的系统架构
 
-- [go2rtc_linux_amd64](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_amd64)
-- [go2rtc_mac_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_mac_arm64.zip)
-- [go2rtc_win64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_win64.zip)
+- [go2rtc_linux_amd64](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_linux_amd64)
+- [go2rtc_mac_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_mac_arm64.zip)
+- [go2rtc_win64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_win64.zip)
 
 ## 功能
 

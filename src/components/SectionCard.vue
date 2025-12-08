@@ -17,7 +17,7 @@ const isOpen = ref(true)
         {{ title }}
       </h3>
       <div v-if="collapsible" :class="isOpen ? 'rotate-180' : ''" class="transform transition">
-        <div i-ph-caret-down />
+        <div class="i-carbon-caret-down" />
       </div>
     </div>
     <div v-show="!collapsible || isOpen" class="content p-4 pt-0">

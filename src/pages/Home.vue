@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Child } from '@tauri-apps/plugin-shell'
 import { openUrl } from '@tauri-apps/plugin-opener'
+import { useResizeObserver } from '@vueuse/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import { writeToTerminal } from '~/composables/console'
@@ -73,12 +74,20 @@ async function openVideo() {
 
 onMounted(async () => {
   if (terminalRef.value) {
-    term = new Terminal()
+    term = new Terminal({
+      convertEol: true,
+      scrollback: 5000, // 限制最大行数
+      disableStdin: true, // 日志通常只读
+    })
     window.term = term
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.value)
     writeToTerminal('term init finish', 'onMounted')
+    // 监听容器大小变化
+    useResizeObserver(terminalRef, () => {
+      fitAddon.fit()
+    })
   }
 })
 
@@ -101,7 +110,7 @@ onUnmounted(() => {
         <AutoStartSwitch />
         <AutoRunSwitch @auto-run="onStartRunning" />
         <button
-          class="bg-sky-6 btn hover:bg-sky-7"
+          class="btn flex bg-sky-600 hover:bg-sky-700"
           :disabled="!isRunning"
           @click="openVideo"
         >
@@ -109,7 +118,7 @@ onUnmounted(() => {
           <div class="i-carbon-arrow-up-right" />
         </button>
         <button
-          class="btn"
+          class="btn flex"
           :disabled="isRunning"
           @click="openConfig"
         >
@@ -117,8 +126,8 @@ onUnmounted(() => {
           配置编辑
         </button>
         <button
-          class="rounded px-4 py-2 text-white transition" :class="[
-            isRunning ? 'bg-red-6 btn hover:bg-red-7' : 'bg-green-6 btn hover:bg-green-7',
+          class="flex rounded px-4 py-2 text-white transition" :class="[
+            isRunning ? 'bg-red-600 btn hover:bg-red-700' : 'bg-green-600 btn hover:bg-green-700',
           ]"
           @click="toggleRunning"
         >

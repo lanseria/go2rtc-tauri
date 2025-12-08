@@ -116,14 +116,14 @@ function removeStream(name: string) {
             </div>
           </FormField>
           <button
-            class="h-full w-full bg-red-5 text-white opacity-0 transition-opacity btn hover:bg-red-700 group-hover:opacity-100"
+            class="btn h-full w-full bg-red-500 text-white opacity-0 transition-opacity hover:bg-red-700 group-hover:opacity-100"
             @click="removeStream(name)"
           >
             <div class="i-carbon-trash-can" />
           </button>
         </div>
       </div>
-      <button class="mt-2 btn" @click="addStream">
+      <button class="mt-2 btn flex" @click="addStream">
         <div class="i-carbon-add mr-1" /> Add Stream
       </button>
     </SectionCard>

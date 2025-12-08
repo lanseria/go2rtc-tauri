@@ -8,7 +8,16 @@
     "directoryStructure": true
   },
   "include": [
-    "**/*"
+    "**/*.ts",
+    "**/*.js",
+    "**/*.rs",
+    "**/*.md",
+    "**/*.yml",
+    "**/*.mjs",
+    "**/*.html",
+    "**/*.json",
+    "**/*.toml",
+    "**/*.vue"
   ],
   "ignore": {
     "useGitignore": true,
