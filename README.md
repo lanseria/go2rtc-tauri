@@ -1,61 +1,75 @@
 # go2rtc-tauri
 
-A go2rtc GUI tool
+基于 Tauri 2 + Vue 3 构建的 [go2rtc](https://github.com/AlexxIT/go2rtc) 桌面端 GUI 管理工具。
 
-## 介绍
+它提供了一个现代化的用户界面来管理 go2rtc 流媒体服务器，支持配置编辑、实时日志查看、流预览以及自动化的进程管理。
 
 ![](./docs/demo.jpg)
 
-这个项目是一个简单 go2rtc GUI 工具，使用`Rust`编写，并使用`Vue3`作为前端框架。
+## ✨ 功能特性
 
-借用了 [go2rtc](https://github.com/AlexxIT/go2rtc) 可执行文件，以实现跨平台(windows/macos/linux)
+- **可视化配置管理**：提供直观的表单界面管理 RTSP/WebRTC 流和 API 设置，同时也支持高级用户的 JSON 源码编辑。
+- **进程守护**：一键启动/停止 go2rtc 服务。在启动前会自动检测并优雅地结束占用目标端口（如 8554, 1984 等）的冲突进程。
+- **实时日志**：内置 xterm.js 终端，实时展示 go2rtc 的运行日志，并对日志格式和颜色进行了美化解析。
+- **自动化控制**：
+  - **开机自启**：配置应用随系统启动。
+  - **自动运行**：应用启动后自动拉起 go2rtc 服务。
+- **跨平台**：通过 Tauri Sidecar 机制，支持 Windows (x64), macOS (Apple Silicon/Intel), Linux (x64)。
 
-go2rtc 支持的系统架构
+## 🛠️ 技术栈
 
-- [go2rtc_linux_amd64](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_amd64)
-- [go2rtc_linux_arm](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_arm)
-- [go2rtc_linux_arm64](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_arm64)
-- [go2rtc_linux_armv6](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_armv6)
-- [go2rtc_linux_i386](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_i386)
-- [go2rtc_linux_mipsel](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_linux_mipsel)
-- [go2rtc_mac_amd64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_mac_amd64.zip)
-- [go2rtc_mac_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_mac_arm64.zip)
-- [go2rtc_win32.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_win32.zip)
-- [go2rtc_win64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_win64.zip)
-- [go2rtc_win_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.8/go2rtc_win_arm64.zip)
+- **核心框架**: [Tauri 2.0](https://tauri.app/) (Rust)
+- **前端框架**: [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/)
+- **语言**: TypeScript
+- **样式**: [Unocss](https://unocss.dev/) (Utility-first CSS)
+- **状态管理**: Pinia + VueUse
+- **终端组件**: xterm.js
 
-本项目暂时仅支持 3 种最常用的系统架构
+## 🚀 快速开始
 
-- [go2rtc_linux_amd64](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_linux_amd64)
-- [go2rtc_mac_arm64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_mac_arm64.zip)
-- [go2rtc_win64.zip](https://github.com/AlexxIT/go2rtc/releases/download/v1.9.12/go2rtc_win64.zip)
+### 开发环境设置
 
-## 功能
+1. **环境要求**
+   - Node.js (推荐 v20+)
+   - Rust (最新稳定版)
+   - pnpm
 
-- 主页面有“配置编辑”， “视频预览”， “日志展示” 以及 “运行/停止” 的按钮入口
-- 通过 vue3 router 来实现页面跳转，如主页面，配置编辑，视频预览，日志展示
-- 配置 https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json
-- 会在运行前，kill 占用需要端口的程序，并启动 go2rtc
-- 开启自启
-- 启动自动运行
+2. **安装依赖**
 
-## AI Prompts
+   ```bash
+   pnpm install
+   ```
 
-- 通过这个 [schema.json](https://raw.githubusercontent.com/AlexxIT/go2rtc/master/website/schema.json) 来生成配置编辑页面，使用`vue3`与`unocss`实现，在这个页面代码的基础上，拆分页面，添加一个切换按钮，初始化是显示组件化的配置编辑组件，切换到非组件化组件时，显示一个输入框。为这两个组件单独创建一个单独的组件，通过切换按钮来切换页面。
+3. **准备 Sidecar**
+   项目包含一个自动脚本，用于根据当前操作系统架构下载对应的 `go2rtc` (v1.9.12) 二进制文件到 `src-tauri/sidecar/` 目录：
 
-## 缺陷
+   ```bash
+   pnpm check
+   ```
 
-- ~~暂时解决不了 js 直接调用 tauri2.0 sidecar 时，无法实时输出 stdout/stderr~~ [已解决]
+4. **启动开发服务器**
 
-## 发布
+   ```bash
+   pnpm dev
+   ```
 
-```bash
-git tag -d v1.1.0
-git push origin --delete v1.1.0
-git tag -a v1.1.0 -m "Release version 1.1.0"
-git push origin v1.1.0
-```
+5. **构建应用**
+   ```bash
+   pnpm build
+   ```
 
-## 许可证
+## 📦 架构说明
 
-MIT
+本项目使用了 Tauri 的 **Sidecar (边车)** 模式来打包和运行 `go2rtc` 二进制文件。
+
+- **二进制管理**: 构建脚本 (`scripts/check.mjs`) 会自动处理二进制文件的下载和重命名，以匹配 Tauri 的目标平台命名规范（例如 `go2rtc-x86_64-pc-windows-msvc.exe`）。
+- **配置持久化**: 用户配置存储在本地存储中，并在启动 Sidecar 时动态生成配置文件传递给 go2rtc。
+- **日志处理**: Rust 后端通过 Command API 启动子进程，并将 `stdout`/`stderr` 实时转发给前端，前端进行解析和着色渲染。
+
+## 📄 许可证
+
+MIT License
+
+---
+
+**致谢**: 本项目是 [go2rtc](https://github.com/AlexxIT/go2rtc) 的 GUI 包装器，核心流媒体功能由 go2rtc 提供。
