@@ -27,3 +27,4 @@ LOCAL_NOTES.md
 .go2rtc-dl/
 src-tauri/sidecar/**
 src-tauri/resources/**
+ai/project_context.xml

@@ -1,7 +1,6 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
-import os from 'node:os' // 导入os模块
 import path from 'node:path'
 import process from 'node:process'
 import AdmZip from 'adm-zip'
@@ -15,7 +14,6 @@ const log_info = (...args) => console.log('💬', ...args)
 const log_success = (...args) => console.log('✅', ...args)
 const log_error = (...args) => console.error('❌', ...args)
 const log_debug = (...args) => console.log('🐛', ...args)
-const log_warn = (...args) => console.warn('⚠️', ...args) // 添加警告级别
 
 // 定义日志输出函数，方便代码阅读和维护
 
@@ -71,7 +69,7 @@ const platformKey = getPlatformKey(target)
 // SIDECAR_HOST用于生成目标二进制文件的名称，如go2rtc-x86_64-pc-windows-msvc.exe
 
 log_debug('Detected platform:', platformKey)
-const GO2RTC_VERSION = 'v1.9.9'
+const GO2RTC_VERSION = 'v1.9.12'
 const REPO_BASE = 'https://github.com/AlexxIT/go2rtc/releases/download'
 
 // 定义 go2rtc 的版本和下载地址的基础 URL
