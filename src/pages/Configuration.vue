@@ -50,7 +50,7 @@ function toggleMode() {
     <!-- Header with back button -->
     <div class="mb-4 flex items-center">
       <button
-        class="flex items-center gap-2 rounded bg-gray-200 px-3 py-2 transition hover:bg-gray-300"
+        class="btn-ghost"
         @click="goBack"
       >
         <span class="i-carbon-arrow-left" />
@@ -63,21 +63,21 @@ function toggleMode() {
       <div class="flex gap-2">
         <!-- Mode toggle button -->
         <button
-          class="rounded bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
+          class="btn-secondary"
           @click="toggleMode"
         >
           {{ isJsonMode ? '切换到表单模式' : '切换到JSON模式' }}
         </button>
         <!-- Reset button -->
         <button
-          class="rounded bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
+          class="btn-danger"
           @click="handleReset"
         >
           重置
         </button>
         <!-- Save button -->
         <button
-          class="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+          class="btn-primary"
           @click="saveConfig"
         >
           保存

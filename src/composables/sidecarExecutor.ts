@@ -6,6 +6,34 @@ import { platform } from '@tauri-apps/plugin-os'
 import { Command } from '@tauri-apps/plugin-shell'
 import { writeToTerminal } from './console'
 
+// 解析 go2rtc 日志格式
+// 格式: 20:45:15.173 INF [api] listen addr=127.0.0.1:1984
+// 或者: 20:45:15.164 INF go2rtc platform=windows/amd64 ...
+function parseGo2rtcLog(line: string): { parsed: boolean, level?: TermLogLevel, source?: string, message: string } {
+  // eslint-disable-next-line regexp/no-super-linear-backtracking
+  const regex = /^\d{2}:\d{2}:\d{2}\.\d{3}\s+(INF|WRN|ERR|DBG|TRC)\s+(?:\[(.*?)\]\s+)?(.*)$/
+  const match = line.trim().match(regex)
+
+  if (match) {
+    const levelMap: Record<string, TermLogLevel> = {
+      INF: 'INF',
+      WRN: 'WRN',
+      ERR: 'ERR',
+      DBG: 'DBG',
+      TRC: 'DBG',
+    }
+
+    return {
+      parsed: true,
+      level: levelMap[match[1]] || 'INF',
+      source: match[2] ? `go2rtc:${match[2]}` : 'go2rtc',
+      message: match[3],
+    }
+  }
+
+  return { parsed: false, message: line }
+}
+
 interface ExecutionResult {
   success: boolean
   message?: string
@@ -30,18 +58,40 @@ export async function executeSidecar(
       console.debug(log)
     })
     command.on('error', (error) => {
-      writeToTerminal(error, 'executeSidecar', 'ERR')
+      writeToTerminal(error, 'sidecar', 'ERR')
       console.error(`command error: "${error}"`)
     })
-    command.stdout.on('data', (line) => {
-      writeToTerminal(line, 'executeSidecar')
+    command.stdout.on('data', (data) => {
+      const lines = data.split('\n')
+      lines.forEach((line) => {
+        if (!line.trim())
+          return
+        const { parsed, level, source, message } = parseGo2rtcLog(line)
+        if (parsed) {
+          writeToTerminal(message, source, level)
+        }
+        else {
+          writeToTerminal(line, 'sidecar')
+        }
+      })
       // eslint-disable-next-line no-console
-      console.debug(`command stdout: "${line}"`)
+      console.debug(`command stdout: "${data}"`)
     })
-    command.stderr.on('data', (line) => {
-      writeToTerminal(line, 'executeSidecar', 'ERR')
+    command.stderr.on('data', (data) => {
+      const lines = data.split('\n')
+      lines.forEach((line) => {
+        if (!line.trim())
+          return
+        const { parsed, level, source, message } = parseGo2rtcLog(line)
+        if (parsed) {
+          writeToTerminal(message, source, level)
+        }
+        else {
+          writeToTerminal(line, 'sidecar', 'ERR')
+        }
+      })
       // eslint-disable-next-line no-console
-      console.debug(`command stderr: "${line}"`)
+      console.debug(`command stderr: "${data}"`)
     })
     // 获取子进程引用
     const child = await command.spawn()

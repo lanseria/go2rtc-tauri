@@ -60,7 +60,7 @@ export function writeToTerminal(
   const parts: string[] = []
   parts.push(`${timestampColor}${timestamp}${ANSI_COLORS.RESET}`)
   parts.push(`${levelConfig.color}${levelConfig.label.padEnd(3)}${ANSI_COLORS.RESET}`) // padEnd 确保对齐
-  parts.push(`${ANSI_COLORS.MAGENTA}[${sourceName}]${ANSI_COLORS.RESET}`) // Use the provided sourceName
+  parts.push(`${ANSI_COLORS.CYAN}[${sourceName}]${ANSI_COLORS.RESET}`) // Use the provided sourceName
   parts.push(cleanedMessage) // Message uses terminal default color
 
   term.writeln(parts.join(' '))

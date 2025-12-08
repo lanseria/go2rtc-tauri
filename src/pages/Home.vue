@@ -110,7 +110,7 @@ onUnmounted(() => {
         <AutoStartSwitch />
         <AutoRunSwitch @auto-run="onStartRunning" />
         <button
-          class="btn flex bg-sky-600 hover:bg-sky-700"
+          class="btn-sky"
           :disabled="!isRunning"
           @click="openVideo"
         >
@@ -118,7 +118,7 @@ onUnmounted(() => {
           <div class="i-carbon-arrow-up-right" />
         </button>
         <button
-          class="btn flex"
+          class="btn-primary"
           :disabled="isRunning"
           @click="openConfig"
         >
@@ -126,9 +126,7 @@ onUnmounted(() => {
           配置编辑
         </button>
         <button
-          class="flex rounded px-4 py-2 text-white transition" :class="[
-            isRunning ? 'bg-red-600 btn hover:bg-red-700' : 'bg-green-600 btn hover:bg-green-700',
-          ]"
+          :class="isRunning ? 'btn-danger' : 'btn-success'"
           @click="toggleRunning"
         >
           <div v-if="isRunning" class="i-carbon-stop-filled-alt" />
