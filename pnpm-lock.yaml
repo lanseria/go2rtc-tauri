@@ -29,9 +29,6 @@ importers:
       '@tauri-apps/plugin-shell':
         specifier: ^2.3.3
         version: 2.3.3
-      '@unocss/reset':
-        specifier: ^66.5.10
-        version: 66.5.10
       '@vue/devtools':
         specifier: ^8.0.5
         version: 8.0.5(vite@7.2.7(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
